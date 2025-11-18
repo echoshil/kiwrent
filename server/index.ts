@@ -4,6 +4,7 @@ import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { connectDatabase, getDatabase } from "./models/barang";
 import { initPaketCollection } from "./models/paket";
+import { initUserCollection } from "./models/user";
 import {
   getAllBarang,
   getBarangById,
@@ -13,6 +14,12 @@ import {
   getAllPaket,
   getPaketById,
 } from "./routes/paket";
+import {
+  register,
+  login,
+  me,
+  updateProfile,
+} from "./routes/auth";
 
 export async function createServer() {
   const app = express();
@@ -26,6 +33,7 @@ export async function createServer() {
   try {
     await connectDatabase();
     initPaketCollection();
+    initUserCollection();
   } catch (error) {
     console.error("Failed to connect to MongoDB:", error);
   }
@@ -37,6 +45,12 @@ export async function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
+
+  // Auth routes
+  app.post("/api/auth/register", register);
+  app.post("/api/auth/login", login);
+  app.get("/api/auth/me", me);
+  app.put("/api/auth/profile", updateProfile);
 
   // Barang routes
   app.get("/api/barang", getAllBarang);

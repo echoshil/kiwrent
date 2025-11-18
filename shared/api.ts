@@ -85,3 +85,50 @@ export interface PaketDetailResponse {
   message: string;
   data: Paket;
 }
+
+/**
+ * User interface
+ */
+export interface User {
+  _id?: string;
+  email: string;
+  nama: string;
+  noTelepon?: string;
+  alamat?: string;
+  kota?: string;
+}
+
+/**
+ * Auth API Responses
+ */
+export interface AuthResponse {
+  message: string;
+  token?: string;
+  data?: {
+    userId: string;
+    email: string;
+    nama: string;
+    noTelepon?: string;
+    alamat?: string;
+    kota?: string;
+  };
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  nama: string;
+  noTelepon?: string;
+}
+
+export interface UpdateProfileRequest {
+  nama?: string;
+  noTelepon?: string;
+  alamat?: string;
+  kota?: string;
+}
