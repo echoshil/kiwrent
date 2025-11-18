@@ -5,6 +5,7 @@ import { handleDemo } from "./routes/demo";
 import { connectDatabase, getDatabase } from "./models/barang";
 import { initPaketCollection } from "./models/paket";
 import { initUserCollection } from "./models/user";
+import { initOrderCollection } from "./models/order";
 import {
   getAllBarang,
   getBarangById,
@@ -20,6 +21,12 @@ import {
   me,
   updateProfile,
 } from "./routes/auth";
+import {
+  createOrderHandler,
+  getUserOrdersHandler,
+  getOrderByIdHandler,
+  updateOrderStatusHandler,
+} from "./routes/order";
 
 export async function createServer() {
   const app = express();
@@ -34,6 +41,7 @@ export async function createServer() {
     await connectDatabase();
     initPaketCollection();
     initUserCollection();
+    initOrderCollection();
   } catch (error) {
     console.error("Failed to connect to MongoDB:", error);
   }
@@ -60,6 +68,12 @@ export async function createServer() {
   // Paket routes
   app.get("/api/paket", getAllPaket);
   app.get("/api/paket/:id", getPaketById);
+
+  // Order routes
+  app.post("/api/orders", createOrderHandler);
+  app.get("/api/orders", getUserOrdersHandler);
+  app.get("/api/orders/:id", getOrderByIdHandler);
+  app.put("/api/orders/:id/status", updateOrderStatusHandler);
 
   return app;
 }
