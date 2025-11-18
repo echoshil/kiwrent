@@ -1,9 +1,19 @@
-import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Menu, X, LogOut, User as UserIcon } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    setUserMenuOpen(false);
+    navigate("/");
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">
@@ -37,9 +47,52 @@ export default function Header() {
             >
               Paket
             </Link>
-            <button className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors">
-              Hubungi Kami
-            </button>
+
+            {isAuthenticated && user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-slate-100 transition-colors"
+                >
+                  <UserIcon className="w-5 h-5" />
+                  <span className="text-sm font-semibold">{user.nama}</span>
+                </button>
+
+                {userMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-border overflow-hidden">
+                    <Link
+                      to="/dashboard"
+                      className="block px-4 py-3 hover:bg-slate-50 transition-colors"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors flex items-center gap-2 text-red-600"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <Link
+                  to="/login"
+                  className="text-primary font-semibold hover:text-primary/80 transition-colors"
+                >
+                  Masuk
+                </Link>
+                <Link
+                  to="/register"
+                  className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors"
+                >
+                  Daftar
+                </Link>
+              </div>
+            )}
           </div>
 
           <button
@@ -78,9 +131,50 @@ export default function Header() {
               >
                 Paket
               </Link>
-              <button className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors w-full">
-                Hubungi Kami
-              </button>
+
+              {isAuthenticated && user ? (
+                <>
+                  <div className="border-t border-border pt-4">
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Masuk sebagai: <span className="font-semibold">{user.nama}</span>
+                    </p>
+                    <Link
+                      to="/dashboard"
+                      className="block w-full bg-primary text-primary-foreground px-4 py-2 rounded-lg text-center hover:bg-primary/90 transition-colors mb-2"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full flex items-center justify-center gap-2 text-red-600 px-4 py-2 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Logout
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col gap-3 border-t border-border pt-4">
+                  <Link
+                    to="/login"
+                    className="w-full px-6 py-2 rounded-lg hover:bg-slate-100 transition-colors text-center font-semibold text-primary"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Masuk
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="w-full bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors text-center font-semibold"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Daftar
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         )}
