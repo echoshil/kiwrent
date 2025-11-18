@@ -1,12 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, LogOut, User as UserIcon } from "lucide-react";
+import { Menu, X, LogOut, User as UserIcon, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { useCart } from "../contexts/CartContext";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const { isAuthenticated, user, logout } = useAuth();
+  const { items: cartItems } = useCart();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -48,6 +50,18 @@ export default function Header() {
               Paket
             </Link>
 
+            <Link
+              to="/cart"
+              className="relative text-foreground hover:text-primary transition-colors p-2"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              {cartItems.length > 0 && (
+                <span className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartItems.length}
+                </span>
+              )}
+            </Link>
+
             {isAuthenticated && user ? (
               <div className="relative">
                 <button
@@ -67,9 +81,16 @@ export default function Header() {
                     >
                       Dashboard
                     </Link>
+                    <Link
+                      to="/my-orders"
+                      className="block px-4 py-3 hover:bg-slate-50 transition-colors border-t border-border"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      Pesanan Saya
+                    </Link>
                     <button
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors flex items-center gap-2 text-red-600"
+                      className="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors flex items-center gap-2 text-red-600 border-t border-border"
                     >
                       <LogOut className="w-4 h-4" />
                       Logout
@@ -132,6 +153,19 @@ export default function Header() {
                 Paket
               </Link>
 
+              <Link
+                to="/cart"
+                className="relative text-foreground hover:text-primary transition-colors p-2 flex items-center justify-center"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <ShoppingCart className="w-6 h-6" />
+                {cartItems.length > 0 && (
+                  <span className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartItems.length}
+                  </span>
+                )}
+              </Link>
+
               {isAuthenticated && user ? (
                 <>
                   <div className="border-t border-border pt-4">
@@ -144,6 +178,13 @@ export default function Header() {
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       Dashboard
+                    </Link>
+                    <Link
+                      to="/my-orders"
+                      className="block w-full border-2 border-primary text-primary px-4 py-2 rounded-lg text-center hover:bg-primary/5 transition-colors mb-2"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Pesanan Saya
                     </Link>
                     <button
                       onClick={() => {
