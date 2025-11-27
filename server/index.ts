@@ -10,6 +10,9 @@ import {
   getAllBarang,
   getBarangById,
   getKategori,
+  createBarang,
+  updateBarang,
+  deleteBarang,
 } from "./routes/barang";
 import {
   getAllPaket,
