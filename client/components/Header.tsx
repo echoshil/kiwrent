@@ -209,12 +209,35 @@ export default function Header() {
                     >
                       Pesanan Saya
                     </Link>
+                    {user.isAdmin && (
+                      <>
+                        <div className="border-t border-border pt-3 mt-3">
+                          <p className="text-xs font-semibold text-muted-foreground mb-2">
+                            ADMIN PANEL
+                          </p>
+                          <Link
+                            to="/admin/barang"
+                            className="block w-full bg-blue-100 text-blue-700 px-4 py-2 rounded-lg text-center hover:bg-blue-200 transition-colors mb-2"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            Manajemen Barang
+                          </Link>
+                          <Link
+                            to="/admin/payment"
+                            className="block w-full bg-orange-100 text-orange-700 px-4 py-2 rounded-lg text-center hover:bg-orange-200 transition-colors"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            Verifikasi Pembayaran
+                          </Link>
+                        </div>
+                      </>
+                    )}
                     <button
                       onClick={() => {
                         handleLogout();
                         setMobileMenuOpen(false);
                       }}
-                      className="w-full flex items-center justify-center gap-2 text-red-600 px-4 py-2 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+                      className="w-full flex items-center justify-center gap-2 text-red-600 px-4 py-2 border border-red-200 rounded-lg hover:bg-red-50 transition-colors mt-3"
                     >
                       <LogOut className="w-4 h-4" />
                       Logout
