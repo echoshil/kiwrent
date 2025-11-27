@@ -1,12 +1,27 @@
 import { RequestHandler } from "express";
 import { getBarangCollection } from "../models/barang";
 import { ObjectId } from "mongodb";
+import { verifyToken } from "../utils/auth";
+import { getUserCollection } from "../models/user";
 
 export interface BarangResponse {
   message: string;
   data?: any;
   error?: string;
 }
+
+const checkAdminRole = async (token: string): Promise<boolean> => {
+  try {
+    const payload = verifyToken(token);
+    if (!payload) return false;
+
+    const userCollection = getUserCollection();
+    const user = await userCollection.findOne({ _id: new ObjectId(payload.userId) });
+    return user?.isAdmin === true;
+  } catch {
+    return false;
+  }
+};
 
 export const getAllBarang: RequestHandler = async (req, res) => {
   try {
