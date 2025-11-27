@@ -24,7 +24,7 @@ export const createOrderHandler: RequestHandler = async (req, res) => {
       return;
     }
 
-    const { items, alamatPengiriman, noTelepon, catatan } = req.body;
+    const { items, nama, alamatPengiriman, noTelepon, catatan, buktiPembayaran } = req.body;
 
     if (!items || items.length === 0) {
       res.status(400).json({ message: "Keranjang kosong" });
