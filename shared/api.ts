@@ -96,6 +96,7 @@ export interface User {
   noTelepon?: string;
   alamat?: string;
   kota?: string;
+  isAdmin?: boolean;
 }
 
 /**
