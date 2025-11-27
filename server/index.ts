@@ -29,6 +29,8 @@ import {
   getUserOrdersHandler,
   getOrderByIdHandler,
   updateOrderStatusHandler,
+  verifyPaymentHandler,
+  rejectPaymentHandler,
 } from "./routes/order";
 
 export async function createServer() {
