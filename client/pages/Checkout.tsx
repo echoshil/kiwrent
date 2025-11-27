@@ -272,6 +272,86 @@ export default function Checkout() {
                   />
                 </div>
               </div>
+
+              {/* Pembayaran */}
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                  <QrCode className="w-5 h-5" />
+                  Pembayaran
+                </h2>
+
+                <div className="space-y-6">
+                  {/* QR Code Display */}
+                  <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 text-center">
+                    <p className="text-sm text-muted-foreground mb-4 font-semibold">
+                      Scan QR Code di bawah atau transfer ke rekening admin
+                    </p>
+                    <div className="flex justify-center mb-4">
+                      <div className="bg-white p-4 rounded-lg border-2 border-blue-300">
+                        <QrCode className="w-40 h-40 text-primary" />
+                      </div>
+                    </div>
+                    <div className="text-sm text-foreground bg-white rounded p-3">
+                      <p className="font-semibold mb-2">📱 Bank Transfer</p>
+                      <p className="text-xs text-muted-foreground">
+                        Transfer ke rekening admin dan upload bukti pembayaran
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Payment Proof Upload */}
+                  <div>
+                    <label className="block text-sm font-semibold mb-3">
+                      <div className="flex items-center gap-2">
+                        <Upload className="w-4 h-4" />
+                        Upload Bukti Pembayaran (Wajib)
+                      </div>
+                    </label>
+                    <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="hidden"
+                        id="payment-proof"
+                        required
+                      />
+                      <label htmlFor="payment-proof" className="cursor-pointer block">
+                        {paymentProof ? (
+                          <div className="space-y-3">
+                            <CheckCircle className="w-12 h-12 text-green-500 mx-auto" />
+                            <p className="font-semibold text-green-600">
+                              {paymentProof.name}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Klik untuk mengubah
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <Upload className="w-12 h-12 text-muted-foreground mx-auto" />
+                            <p className="font-semibold">Klik atau drag file di sini</p>
+                            <p className="text-xs text-muted-foreground">
+                              JPG, PNG, GIF (Max 5MB)
+                            </p>
+                          </div>
+                        )}
+                      </label>
+                    </div>
+
+                    {paymentProofPreview && (
+                      <div className="mt-4">
+                        <p className="text-sm font-semibold mb-2">Preview:</p>
+                        <img
+                          src={paymentProofPreview}
+                          alt="Preview bukti pembayaran"
+                          className="max-w-xs h-auto rounded-lg border border-border"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </form>
           </div>
 
