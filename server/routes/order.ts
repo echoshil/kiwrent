@@ -227,3 +227,109 @@ export const updateOrderStatusHandler: RequestHandler = async (req, res) => {
     });
   }
 };
+
+export const verifyPaymentHandler: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const token = req.headers.authorization?.replace("Bearer ", "");
+
+    if (!token) {
+      res.status(401).json({ message: "Tidak terautentikasi" });
+      return;
+    }
+
+    const payload = verifyToken(token);
+    if (!payload) {
+      res.status(401).json({ message: "Token tidak valid" });
+      return;
+    }
+
+    const collection = require("../models/order").getOrderCollection();
+    const userCollection = require("../models/user").getUserCollection();
+
+    const user = await userCollection.findOne({ _id: new ObjectId(payload.userId) });
+    if (!user?.isAdmin) {
+      res.status(403).json({ message: "Hanya admin yang dapat memverifikasi pembayaran" });
+      return;
+    }
+
+    const order = await getOrderById(new ObjectId(id));
+    if (!order) {
+      res.status(404).json({ message: "Pesanan tidak ditemukan" });
+      return;
+    }
+
+    await collection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          statusPembayaran: "lunas",
+          updatedAt: new Date(),
+        },
+      }
+    );
+
+    res.json({
+      message: "Pembayaran berhasil diverifikasi",
+    });
+  } catch (error) {
+    console.error("Verify payment error:", error);
+    res.status(500).json({
+      message: "Error memverifikasi pembayaran",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};
+
+export const rejectPaymentHandler: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const token = req.headers.authorization?.replace("Bearer ", "");
+
+    if (!token) {
+      res.status(401).json({ message: "Tidak terautentikasi" });
+      return;
+    }
+
+    const payload = verifyToken(token);
+    if (!payload) {
+      res.status(401).json({ message: "Token tidak valid" });
+      return;
+    }
+
+    const collection = require("../models/order").getOrderCollection();
+    const userCollection = require("../models/user").getUserCollection();
+
+    const user = await userCollection.findOne({ _id: new ObjectId(payload.userId) });
+    if (!user?.isAdmin) {
+      res.status(403).json({ message: "Hanya admin yang dapat menolak pembayaran" });
+      return;
+    }
+
+    const order = await getOrderById(new ObjectId(id));
+    if (!order) {
+      res.status(404).json({ message: "Pesanan tidak ditemukan" });
+      return;
+    }
+
+    await collection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          statusPembayaran: "pending",
+          updatedAt: new Date(),
+        },
+      }
+    );
+
+    res.json({
+      message: "Pembayaran ditolak. Pesanan kembali menunggu pembayaran",
+    });
+  } catch (error) {
+    console.error("Reject payment error:", error);
+    res.status(500).json({
+      message: "Error menolak pembayaran",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};
