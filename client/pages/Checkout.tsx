@@ -55,8 +55,14 @@ export default function Checkout() {
     setLoading(true);
 
     // Validation
-    if (!formData.alamatPengiriman || !formData.noTelepon) {
-      setError("Alamat dan nomor telepon harus diisi");
+    if (!formData.nama || !formData.alamatPengiriman || !formData.noTelepon) {
+      setError("Nama, alamat, dan nomor telepon harus diisi");
+      setLoading(false);
+      return;
+    }
+
+    if (!paymentProof) {
+      setError("Bukti pembayaran harus diupload");
       setLoading(false);
       return;
     }
