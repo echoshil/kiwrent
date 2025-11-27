@@ -180,6 +180,31 @@ export default function Checkout() {
                 </div>
               )}
 
+              {/* Informasi Pemesan */}
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                  <FileText className="w-5 h-5" />
+                  Informasi Pemesan
+                </h2>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold mb-2">
+                      Nama Lengkap
+                    </label>
+                    <input
+                      type="text"
+                      name="nama"
+                      value={formData.nama}
+                      onChange={handleChange}
+                      placeholder="Nama lengkap Anda"
+                      required
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* Alamat Pengiriman */}
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
