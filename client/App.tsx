@@ -19,8 +19,11 @@ import Dashboard from "./pages/Dashboard";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import MyOrders from "./pages/MyOrders";
+import AdminBarang from "./pages/AdminBarang";
+import AdminPayment from "./pages/AdminPayment";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminProtectedRoute from "./components/AdminProtectedRoute";
 
 const queryClient = new QueryClient();
 
