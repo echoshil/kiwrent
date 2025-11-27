@@ -87,9 +87,11 @@ export default function Checkout() {
             jumlah: item.jumlah,
             durasi: item.durasi,
           })),
+          nama: formData.nama,
           alamatPengiriman: formData.alamatPengiriman,
           noTelepon: formData.noTelepon,
           catatan: formData.catatan,
+          buktiPembayaran: paymentProofPreview,
         }),
       });
 
