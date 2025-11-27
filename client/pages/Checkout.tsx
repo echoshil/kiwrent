@@ -32,6 +32,23 @@ export default function Checkout() {
     setError("");
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setError("Ukuran file terlalu besar (max 5MB)");
+        return;
+      }
+      setPaymentProof(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPaymentProofPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+      setError("");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
