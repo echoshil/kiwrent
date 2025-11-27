@@ -31,8 +31,13 @@ export const createOrderHandler: RequestHandler = async (req, res) => {
       return;
     }
 
-    if (!alamatPengiriman || !noTelepon) {
-      res.status(400).json({ message: "Alamat dan nomor telepon harus diisi" });
+    if (!nama || !alamatPengiriman || !noTelepon) {
+      res.status(400).json({ message: "Nama, alamat, dan nomor telepon harus diisi" });
+      return;
+    }
+
+    if (!buktiPembayaran) {
+      res.status(400).json({ message: "Bukti pembayaran harus diunggah" });
       return;
     }
 
