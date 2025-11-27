@@ -86,6 +86,7 @@ export const createOrderHandler: RequestHandler = async (req, res) => {
       alamatPengiriman,
       noTelepon,
       catatan: catatan || "",
+      buktiPembayaran,
     });
 
     res.status(201).json({
