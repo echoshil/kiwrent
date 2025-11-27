@@ -16,11 +16,12 @@ export interface Order {
   items: OrderItem[];
   totalHarga: number;
   nomorPesanan: string;
-  statusPembayaran: "pending" | "lunas";
+  statusPembayaran: "pending" | "lunas" | "diverifikasi";
   statusPengiriman: "pending" | "dikirim" | "diterima";
   alamatPengiriman: string;
   noTelepon: string;
   catatan?: string;
+  buktiPembayaran?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
