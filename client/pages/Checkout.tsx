@@ -12,7 +12,10 @@ export default function Checkout() {
     alamatPengiriman: user?.alamat || "",
     noTelepon: user?.noTelepon || "",
     catatan: "",
+    nama: user?.nama || "",
   });
+  const [paymentProof, setPaymentProof] = useState<File | null>(null);
+  const [paymentProofPreview, setPaymentProofPreview] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [orderSuccess, setOrderSuccess] = useState(false);
