@@ -67,6 +67,9 @@ export async function createServer() {
   app.get("/api/barang", getAllBarang);
   app.get("/api/barang/:id", getBarangById);
   app.get("/api/kategori", getKategori);
+  app.post("/api/barang", createBarang);
+  app.put("/api/barang/:id", updateBarang);
+  app.delete("/api/barang/:id", deleteBarang);
 
   // Paket routes
   app.get("/api/paket", getAllPaket);
