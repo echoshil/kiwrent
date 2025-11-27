@@ -82,6 +82,8 @@ export async function createServer() {
   app.get("/api/orders", getUserOrdersHandler);
   app.get("/api/orders/:id", getOrderByIdHandler);
   app.put("/api/orders/:id/status", updateOrderStatusHandler);
+  app.put("/api/orders/:id/payment/verify", verifyPaymentHandler);
+  app.put("/api/orders/:id/payment/reject", rejectPaymentHandler);
 
   return app;
 }
