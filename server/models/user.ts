@@ -9,6 +9,7 @@ export interface User {
   noTelepon?: string;
   alamat?: string;
   kota?: string;
+  isAdmin?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -47,4 +48,17 @@ export async function getUserByEmail(email: string) {
 export async function getUserById(id: ObjectId) {
   const collection = getUserCollection();
   return collection.findOne({ _id: id });
+}
+
+export async function updateUser(id: ObjectId, data: Partial<User>) {
+  const collection = getUserCollection();
+  return collection.updateOne(
+    { _id: id },
+    {
+      $set: {
+        ...data,
+        updatedAt: new Date(),
+      },
+    }
+  );
 }
