@@ -88,6 +88,29 @@ export default function Header() {
                     >
                       Pesanan Saya
                     </Link>
+                    {user.isAdmin && (
+                      <>
+                        <div className="border-t border-border">
+                          <p className="text-xs font-semibold text-muted-foreground px-4 py-2 bg-slate-50">
+                            ADMIN PANEL
+                          </p>
+                          <Link
+                            to="/admin/barang"
+                            className="block px-4 py-3 hover:bg-slate-50 transition-colors text-sm"
+                            onClick={() => setUserMenuOpen(false)}
+                          >
+                            Manajemen Barang
+                          </Link>
+                          <Link
+                            to="/admin/payment"
+                            className="block px-4 py-3 hover:bg-slate-50 transition-colors text-sm border-t border-border"
+                            onClick={() => setUserMenuOpen(false)}
+                          >
+                            Verifikasi Pembayaran
+                          </Link>
+                        </div>
+                      </>
+                    )}
                     <button
                       onClick={handleLogout}
                       className="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors flex items-center gap-2 text-red-600 border-t border-border"
