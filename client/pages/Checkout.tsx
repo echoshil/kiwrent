@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
 import { useAuth } from "../contexts/AuthContext";
-import { MapPin, Phone, FileText, AlertCircle, CheckCircle, Loader } from "lucide-react";
+import { MapPin, Phone, FileText, AlertCircle, CheckCircle, Loader, Upload, QrCode } from "lucide-react";
 
 export default function Checkout() {
   const navigate = useNavigate();
