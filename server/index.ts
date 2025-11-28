@@ -14,16 +14,8 @@ import {
   updateBarang,
   deleteBarang,
 } from "./routes/barang";
-import {
-  getAllPaket,
-  getPaketById,
-} from "./routes/paket";
-import {
-  register,
-  login,
-  me,
-  updateProfile,
-} from "./routes/auth";
+import { getAllPaket, getPaketById } from "./routes/paket";
+import { register, login, me, updateProfile } from "./routes/auth";
 import {
   createOrderHandler,
   getUserOrdersHandler,

@@ -33,7 +33,9 @@ function expressPlugin(): Plugin {
       console.log("[EXPRESS] Initializing Express server...");
       createServer()
         .then((app) => {
-          console.log("[EXPRESS] Express server initialized, adding middleware");
+          console.log(
+            "[EXPRESS] Express server initialized, adding middleware",
+          );
           server.middlewares.use(app);
           console.log("[EXPRESS] Express middleware added");
         })

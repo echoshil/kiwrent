@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Package, CheckCircle, Clock, Truck, AlertCircle, MessageCircle, X } from "lucide-react";
+import {
+  Package,
+  CheckCircle,
+  Clock,
+  Truck,
+  AlertCircle,
+  MessageCircle,
+  X,
+} from "lucide-react";
 
 interface TimelineStep {
   id: string;
@@ -104,7 +112,8 @@ export default function OrderTracking() {
     {
       id: "8",
       label: "Proses Selesai",
-      description: "Admin telah menerima dan mengecek barang yang dikembalikan.",
+      description:
+        "Admin telah menerima dan mengecek barang yang dikembalikan.",
       icon: CheckCircle,
       estimatedDays: "1 hari",
       completed: false,
@@ -148,7 +157,9 @@ export default function OrderTracking() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         {/* Order Selection */}
         <div className="mb-8">
-          <label className="block text-sm font-semibold mb-2">Pilih Pesanan:</label>
+          <label className="block text-sm font-semibold mb-2">
+            Pilih Pesanan:
+          </label>
           <select
             value={selectedOrder}
             onChange={(e) => setSelectedOrder(e.target.value)}
@@ -204,8 +215,8 @@ export default function OrderTracking() {
                               isCompleted
                                 ? "bg-green-100 text-green-700"
                                 : isCurrent
-                                ? "bg-primary text-primary-foreground ring-4 ring-primary/20"
-                                : "bg-slate-100 text-slate-400"
+                                  ? "bg-primary text-primary-foreground ring-4 ring-primary/20"
+                                  : "bg-slate-100 text-slate-400"
                             }`}
                           >
                             {isCompleted ? (
@@ -224,8 +235,8 @@ export default function OrderTracking() {
                                 isCompleted
                                   ? "bg-green-200"
                                   : isCurrent
-                                  ? "bg-primary/50"
-                                  : "bg-slate-200"
+                                    ? "bg-primary/50"
+                                    : "bg-slate-200"
                               }`}
                             ></div>
                           )}
@@ -240,8 +251,8 @@ export default function OrderTracking() {
                                   isCompleted
                                     ? "text-green-700"
                                     : isCurrent
-                                    ? "text-primary"
-                                    : "text-slate-600"
+                                      ? "text-primary"
+                                      : "text-slate-600"
                                 }`}
                               >
                                 {step.label}
@@ -254,7 +265,8 @@ export default function OrderTracking() {
 
                           {/* Time Estimate */}
                           <div className="bg-slate-50 rounded px-3 py-2 text-sm w-fit">
-                            <span className="font-semibold">Estimasi:</span> {step.estimatedDays}
+                            <span className="font-semibold">Estimasi:</span>{" "}
+                            {step.estimatedDays}
                           </div>
                         </div>
                       </div>
@@ -267,9 +279,9 @@ export default function OrderTracking() {
               <div className="mt-6 pt-6 border-t border-border">
                 <div className="bg-blue-50 border-l-4 border-blue-500 rounded p-4">
                   <p className="text-sm text-blue-800">
-                    <span className="font-bold">ℹ️ Info:</span> Anda sedang menunggu
-                    pengiriman barang. Barang akan tiba dalam estimasi 1-3 hari kerja.
-                    Hubungi admin jika ada pertanyaan.
+                    <span className="font-bold">ℹ️ Info:</span> Anda sedang
+                    menunggu pengiriman barang. Barang akan tiba dalam estimasi
+                    1-3 hari kerja. Hubungi admin jika ada pertanyaan.
                   </p>
                 </div>
               </div>
@@ -339,16 +351,22 @@ export default function OrderTracking() {
         {/* Additional Information */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-4">
-            <h4 className="font-bold text-yellow-800 mb-2">⚠️ Pengingat Penting</h4>
+            <h4 className="font-bold text-yellow-800 mb-2">
+              ⚠️ Pengingat Penting
+            </h4>
             <ul className="text-sm text-yellow-700 space-y-1">
-              <li>• Barang harus dikembalikan sesuai tanggal yang telah ditentukan</li>
+              <li>
+                • Barang harus dikembalikan sesuai tanggal yang telah ditentukan
+              </li>
               <li>• Denda keterlambatan: Rp 50.000 per hari</li>
               <li>• Jika ada kerusakan, laporkan segera ke admin</li>
             </ul>
           </div>
 
           <div className="bg-green-50 border-l-4 border-green-500 rounded-lg p-4">
-            <h4 className="font-bold text-green-800 mb-2">✓ Checklist Penerimaan</h4>
+            <h4 className="font-bold text-green-800 mb-2">
+              ✓ Checklist Penerimaan
+            </h4>
             <ul className="text-sm text-green-700 space-y-1">
               <li>☐ Cek kondisi semua barang saat diterima</li>
               <li>☐ Verifikasi kelengkapan sesuai pesanan</li>
@@ -360,7 +378,9 @@ export default function OrderTracking() {
 
         {/* Quick Actions */}
         <div className="mt-8 text-center">
-          <p className="text-muted-foreground mb-4">Ada pertanyaan atau butuh bantuan?</p>
+          <p className="text-muted-foreground mb-4">
+            Ada pertanyaan atau butuh bantuan?
+          </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
               href="https://wa.me/628123456789"

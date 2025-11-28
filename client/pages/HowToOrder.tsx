@@ -1,4 +1,12 @@
-import { CheckCircle, ShoppingCart, CreditCard, FileText, Truck, RotateCcw, Clock } from "lucide-react";
+import {
+  CheckCircle,
+  ShoppingCart,
+  CreditCard,
+  FileText,
+  Truck,
+  RotateCcw,
+  Clock,
+} from "lucide-react";
 
 export default function HowToOrder() {
   const steps = [
@@ -216,20 +224,27 @@ export default function HowToOrder() {
           {steps.map((step, index) => {
             const Icon = step.icon;
             return (
-              <div key={step.number} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+              <div
+                key={step.number}
+                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+              >
                 <div className="md:flex">
                   {/* Left - Number & Icon */}
                   <div className="md:w-24 bg-gradient-to-br from-primary/10 to-secondary/10 p-6 flex flex-col items-center justify-center">
                     <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-3">
                       <Icon className="w-8 h-8 text-primary-foreground" />
                     </div>
-                    <span className="text-2xl font-bold text-primary">#{step.number}</span>
+                    <span className="text-2xl font-bold text-primary">
+                      #{step.number}
+                    </span>
                   </div>
 
                   {/* Right - Content */}
                   <div className="p-6 md:flex-1">
                     <h3 className="text-2xl font-bold mb-2">{step.title}</h3>
-                    <p className="text-muted-foreground mb-4">{step.description}</p>
+                    <p className="text-muted-foreground mb-4">
+                      {step.description}
+                    </p>
 
                     {/* Details */}
                     <div className="bg-slate-50 rounded-lg p-4">
@@ -240,7 +255,9 @@ export default function HowToOrder() {
                             <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary/20 text-primary text-xs font-bold flex-shrink-0 mt-0.5">
                               ✓
                             </span>
-                            <span className="text-sm text-foreground">{detail}</span>
+                            <span className="text-sm text-foreground">
+                              {detail}
+                            </span>
                           </li>
                         ))}
                       </ul>
@@ -261,42 +278,59 @@ export default function HowToOrder() {
 
         {/* FAQ Section */}
         <div className="mt-12 bg-green-50 border-2 border-green-200 rounded-lg p-8">
-          <h2 className="text-2xl font-bold mb-6">Pertanyaan yang Sering Diajukan</h2>
+          <h2 className="text-2xl font-bold mb-6">
+            Pertanyaan yang Sering Diajukan
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h4 className="font-bold text-lg mb-2">💳 Metode Pembayaran?</h4>
               <p className="text-muted-foreground">
-                Kami menerima transfer bank ke rekening admin. Nominal akan ditampilkan saat checkout.
+                Kami menerima transfer bank ke rekening admin. Nominal akan
+                ditampilkan saat checkout.
               </p>
             </div>
             <div>
-              <h4 className="font-bold text-lg mb-2">⏱️ Berapa lama prosesnya?</h4>
+              <h4 className="font-bold text-lg mb-2">
+                ⏱️ Berapa lama prosesnya?
+              </h4>
               <p className="text-muted-foreground">
                 Total 2-4 minggu tergantung durasi sewa yang Anda pilih.
               </p>
             </div>
             <div>
-              <h4 className="font-bold text-lg mb-2">🛡️ Apakah ada asuransi?</h4>
+              <h4 className="font-bold text-lg mb-2">
+                🛡️ Apakah ada asuransi?
+              </h4>
               <p className="text-muted-foreground">
-                Ya, asuransi dasar sudah termasuk dalam harga. Silakan hubungi admin untuk asuransi tambahan.
+                Ya, asuransi dasar sudah termasuk dalam harga. Silakan hubungi
+                admin untuk asuransi tambahan.
               </p>
             </div>
             <div>
-              <h4 className="font-bold text-lg mb-2">❌ Bagaimana jika ada kerusakan?</h4>
+              <h4 className="font-bold text-lg mb-2">
+                ❌ Bagaimana jika ada kerusakan?
+              </h4>
               <p className="text-muted-foreground">
-                Lapor ke admin segera dengan bukti foto/video. Klaim asuransi akan diproses.
+                Lapor ke admin segera dengan bukti foto/video. Klaim asuransi
+                akan diproses.
               </p>
             </div>
             <div>
-              <h4 className="font-bold text-lg mb-2">📱 Apakah ada customer service?</h4>
+              <h4 className="font-bold text-lg mb-2">
+                📱 Apakah ada customer service?
+              </h4>
               <p className="text-muted-foreground">
-                Ya, Anda dapat menghubungi admin melalui chat di halaman tracking pesanan Anda.
+                Ya, Anda dapat menghubungi admin melalui chat di halaman
+                tracking pesanan Anda.
               </p>
             </div>
             <div>
-              <h4 className="font-bold text-lg mb-2">🔄 Bisa perpanjang sewa?</h4>
+              <h4 className="font-bold text-lg mb-2">
+                🔄 Bisa perpanjang sewa?
+              </h4>
               <p className="text-muted-foreground">
-                Tentu, hubungi admin sebelum tanggal pengembalian untuk perpanjangan.
+                Tentu, hubungi admin sebelum tanggal pengembalian untuk
+                perpanjangan.
               </p>
             </div>
           </div>
@@ -306,7 +340,8 @@ export default function HowToOrder() {
         <div className="mt-12 text-center">
           <h2 className="text-2xl font-bold mb-4">Siap untuk mulai menyewa?</h2>
           <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-            Jelajahi koleksi lengkap perlengkapan camping kami dan temukan yang sesuai dengan kebutuhan petualangan Anda.
+            Jelajahi koleksi lengkap perlengkapan camping kami dan temukan yang
+            sesuai dengan kebutuhan petualangan Anda.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a

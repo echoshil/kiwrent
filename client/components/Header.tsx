@@ -199,7 +199,8 @@ export default function Header() {
                 <>
                   <div className="border-t border-border pt-4">
                     <p className="text-sm text-muted-foreground mb-3">
-                      Masuk sebagai: <span className="font-semibold">{user.nama}</span>
+                      Masuk sebagai:{" "}
+                      <span className="font-semibold">{user.nama}</span>
                     </p>
                     <Link
                       to="/dashboard"

@@ -16,14 +16,19 @@ let db: Db;
 let barangCollection: Collection<Barang>;
 
 export async function connectDatabase() {
-  const mongoUri = process.env.MONGODB_URI || "mongodb+srv://dikirifala6_db_user:8XQqBkEzzaAVIf6k@rent.pm8mmxk.mongodb.net/?appName=rent";
-  console.log("[MongoDB] Attempting to connect with URI:", mongoUri.substring(0, 30) + "...");
+  const mongoUri =
+    process.env.MONGODB_URI ||
+    "mongodb+srv://dikirifala6_db_user:8XQqBkEzzaAVIf6k@rent.pm8mmxk.mongodb.net/?appName=rent";
+  console.log(
+    "[MongoDB] Attempting to connect with URI:",
+    mongoUri.substring(0, 30) + "...",
+  );
 
   const client = new MongoClient(mongoUri, {
     serverSelectionTimeoutMS: 10000,
     socketTimeoutMS: 10000,
     retryWrites: false,
-    ...(process.env.NODE_ENV === 'development' && {
+    ...(process.env.NODE_ENV === "development" && {
       tls: true,
       tlsInsecure: true,
     }),
