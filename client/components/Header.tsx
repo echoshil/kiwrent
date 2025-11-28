@@ -49,6 +49,12 @@ export default function Header() {
             >
               Paket
             </Link>
+            <Link
+              to="/how-to-order"
+              className="text-foreground hover:text-primary transition-colors"
+            >
+              Cara Pesan
+            </Link>
 
             <Link
               to="/cart"
