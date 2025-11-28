@@ -20,8 +20,13 @@ export async function connectDatabase() {
   console.log("[MongoDB] Attempting to connect with URI:", mongoUri.substring(0, 30) + "...");
 
   const client = new MongoClient(mongoUri, {
-    serverSelectionTimeoutMS: 5000,
-    socketTimeoutMS: 5000,
+    serverSelectionTimeoutMS: 10000,
+    socketTimeoutMS: 10000,
+    retryWrites: false,
+    ...(process.env.NODE_ENV === 'development' && {
+      tls: true,
+      tlsInsecure: true,
+    }),
   });
 
   try {
