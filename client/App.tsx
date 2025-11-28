@@ -21,6 +21,8 @@ import Checkout from "./pages/Checkout";
 import MyOrders from "./pages/MyOrders";
 import AdminBarang from "./pages/AdminBarang";
 import AdminPayment from "./pages/AdminPayment";
+import HowToOrder from "./pages/HowToOrder";
+import OrderTracking from "./pages/OrderTracking";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
