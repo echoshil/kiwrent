@@ -47,8 +47,10 @@ export async function createServer() {
     initPaketCollection();
     initUserCollection();
     initOrderCollection();
+    console.log("✓ MongoDB initialized successfully");
   } catch (error) {
-    console.error("Failed to connect to MongoDB:", error);
+    console.error("⚠ Failed to connect to MongoDB:", error);
+    console.warn("⚠ Running in offline mode - database operations may fail");
   }
 
   // Example API routes
