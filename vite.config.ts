@@ -26,11 +26,25 @@ export default defineConfig(({ mode }) => ({
 }));
 
 function expressPlugin(): Plugin {
+  let resolveApp: ((app: any) => void) | null = null;
+  const appPromise = new Promise((resolve) => {
+    resolveApp = resolve;
+  });
+
+  // Start initializing the app immediately
+  createServer()
+    .then((app) => {
+      if (resolveApp) resolveApp(app);
+    })
+    .catch((err) => {
+      console.error("Failed to initialize Express app:", err);
+    });
+
   return {
     name: "express-plugin",
     apply: "serve", // Only apply during development (serve mode)
     async configureServer(server) {
-      const app = await createServer();
+      const app = await appPromise;
 
       // Add Express app as middleware to Vite dev server
       server.middlewares.use(app);
