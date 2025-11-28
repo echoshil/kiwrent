@@ -30,9 +30,16 @@ function expressPlugin(): Plugin {
     name: "express-plugin",
     apply: "serve", // Only apply during development (serve mode)
     configureServer(server) {
-      createServer().then((app) => {
-        server.middlewares.use(app);
-      });
+      console.log("[EXPRESS] Initializing Express server...");
+      createServer()
+        .then((app) => {
+          console.log("[EXPRESS] Express server initialized, adding middleware");
+          server.middlewares.use(app);
+          console.log("[EXPRESS] Express middleware added");
+        })
+        .catch((err) => {
+          console.error("[EXPRESS] Error initializing Express:", err);
+        });
       return undefined;
     },
   };
