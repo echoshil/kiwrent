@@ -17,7 +17,12 @@ let barangCollection: Collection<Barang>;
 
 export async function connectDatabase() {
   const mongoUri = process.env.MONGODB_URI || "mongodb+srv://dikirifala6_db_user:8XQqBkEzzaAVIf6k@rent.pm8mmxk.mongodb.net/?appName=rent";
-  const client = new MongoClient(mongoUri);
+  console.log("[MongoDB] Attempting to connect with URI:", mongoUri.substring(0, 30) + "...");
+
+  const client = new MongoClient(mongoUri, {
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 5000,
+  });
 
   try {
     await client.connect();
