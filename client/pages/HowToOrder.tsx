@@ -336,6 +336,36 @@ export default function HowToOrder() {
           </div>
         </div>
 
+        {/* Quick Links */}
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-6">
+            <h3 className="text-xl font-bold mb-3">📍 Cek Status Pesanan</h3>
+            <p className="text-muted-foreground mb-4">
+              Sudah melakukan pemesanan? Pantau status pesanan Anda secara real-time.
+            </p>
+            <a
+              href="/order-tracking"
+              className="inline-block bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors font-semibold"
+            >
+              Lihat Status Pesanan
+            </a>
+          </div>
+          <div className="bg-orange-50 border-2 border-orange-200 rounded-lg p-6">
+            <h3 className="text-xl font-bold mb-3">💬 Hubungi Admin</h3>
+            <p className="text-muted-foreground mb-4">
+              Ada pertanyaan atau butuh bantuan? Tim admin kami siap membantu Anda.
+            </p>
+            <a
+              href="https://wa.me/628123456789"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors font-semibold"
+            >
+              WhatsApp Admin
+            </a>
+          </div>
+        </div>
+
         {/* CTA */}
         <div className="mt-12 text-center">
           <h2 className="text-2xl font-bold mb-4">Siap untuk mulai menyewa?</h2>
