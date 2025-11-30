@@ -102,16 +102,16 @@ export default function OrderTracking() {
     completed: 7,
   };
 
-  // Timeline steps
-  const timeline: TimelineStep[] = [
+  // Timeline steps based on current order status
+  const getTimeline = (currentStep: number): TimelineStep[] => [
     {
       id: "1",
       label: "Menunggu Pembayaran",
       description: "Pesanan Anda sudah tercatat, tunggu konfirmasi pembayaran.",
       icon: Clock,
       estimatedDays: "-",
-      completed: true,
-      current: false,
+      completed: currentStep > 0,
+      current: currentStep === 0,
     },
     {
       id: "2",
@@ -119,8 +119,8 @@ export default function OrderTracking() {
       description: "Admin telah memverifikasi bukti pembayaran Anda.",
       icon: CheckCircle,
       estimatedDays: "Instant",
-      completed: true,
-      current: false,
+      completed: currentStep > 1,
+      current: currentStep === 1,
     },
     {
       id: "3",
@@ -128,8 +128,8 @@ export default function OrderTracking() {
       description: "Admin sedang menyiapkan dan mengecek kondisi barang.",
       icon: Package,
       estimatedDays: "1-2 hari",
-      completed: true,
-      current: false,
+      completed: currentStep > 2,
+      current: currentStep === 2,
     },
     {
       id: "4",
@@ -137,8 +137,8 @@ export default function OrderTracking() {
       description: "Barang sedang dalam perjalanan menuju alamat Anda.",
       icon: Truck,
       estimatedDays: "1-3 hari",
-      completed: false,
-      current: true,
+      completed: currentStep > 3,
+      current: currentStep === 3,
     },
     {
       id: "5",
@@ -146,8 +146,8 @@ export default function OrderTracking() {
       description: "Barang telah tiba di lokasi Anda.",
       icon: CheckCircle,
       estimatedDays: "Otomatis",
-      completed: false,
-      current: false,
+      completed: currentStep > 4,
+      current: currentStep === 4,
     },
     {
       id: "6",
@@ -155,8 +155,8 @@ export default function OrderTracking() {
       description: "Anda sedang menggunakan barang yang disewa.",
       icon: Clock,
       estimatedDays: "Sesuai durasi",
-      completed: false,
-      current: false,
+      completed: currentStep > 5,
+      current: currentStep === 5,
     },
     {
       id: "7",
@@ -164,8 +164,8 @@ export default function OrderTracking() {
       description: "Barang telah dikembalikan ke penyewa.",
       icon: Truck,
       estimatedDays: "1-2 hari",
-      completed: false,
-      current: false,
+      completed: currentStep > 6,
+      current: currentStep === 6,
     },
     {
       id: "8",
@@ -174,10 +174,12 @@ export default function OrderTracking() {
         "Admin telah menerima dan mengecek barang yang dikembalikan.",
       icon: CheckCircle,
       estimatedDays: "1 hari",
-      completed: false,
-      current: false,
+      completed: currentStep > 7,
+      current: currentStep === 7,
     },
   ];
+
+  const timeline = getTimeline(currentOrder?.currentStep || 0);
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
