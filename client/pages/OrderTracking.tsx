@@ -404,9 +404,16 @@ export default function OrderTracking() {
               <div className="mt-6 pt-6 border-t border-border">
                 <div className="bg-blue-50 border-l-4 border-blue-500 rounded p-4">
                   <p className="text-sm text-blue-800">
-                    <span className="font-bold">ℹ️ Info:</span> Anda sedang
-                    menunggu pengiriman barang. Barang akan tiba dalam estimasi
-                    1-3 hari kerja. Hubungi admin jika ada pertanyaan.
+                    <span className="font-bold">ℹ️ Info:</span>{" "}
+                    {currentOrder.status === "shipped"
+                      ? "Anda sedang menunggu pengiriman barang. Barang akan tiba dalam estimasi 1-3 hari kerja."
+                      : currentOrder.status === "in_use"
+                        ? `Anda sedang menggunakan barang yang disewa. Pastikan mengembalikan sebelum tanggal ${currentOrder.rentalEndDate}.`
+                        : currentOrder.status === "completed"
+                          ? "Pesanan Anda telah selesai. Terima kasih telah menyewa bersama kami!"
+                          : "Untuk informasi lebih lanjut, silakan hubungi admin."}
+                    {" "}
+                    Hubungi admin jika ada pertanyaan.
                   </p>
                 </div>
               </div>
@@ -481,7 +488,7 @@ export default function OrderTracking() {
             </h4>
             <ul className="text-sm text-yellow-700 space-y-1">
               <li>
-                ��� Barang harus dikembalikan sesuai tanggal yang telah ditentukan
+                • Barang harus dikembalikan sesuai tanggal yang telah ditentukan
               </li>
               <li>• Denda keterlambatan: Rp 50.000 per hari</li>
               <li>• Jika ada kerusakan, laporkan segera ke admin</li>
