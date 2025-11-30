@@ -199,6 +199,20 @@ export default function OrderTracking() {
     }
   };
 
+  const handleCopyOrderId = () => {
+    navigator.clipboard.writeText(currentOrder.id);
+    setCopiedId(true);
+    setTimeout(() => setCopiedId(false), 2000);
+  };
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(value);
+  };
+
   return (
     <div className="w-full">
       {/* Header */}
@@ -221,32 +235,83 @@ export default function OrderTracking() {
             Pilih Pesanan:
           </label>
           <select
-            value={selectedOrder}
-            onChange={(e) => setSelectedOrder(e.target.value)}
+            value={selectedOrderId}
+            onChange={(e) => setSelectedOrderId(e.target.value)}
             className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
           >
-            <option value="RC-20240115-ABC123DEF">
-              RC-20240115-ABC123DEF - Paket Couple Camp
-            </option>
-            <option value="RC-20240110-XYZ789ABC">
-              RC-20240110-XYZ789ABC - Tenda + Sleeping Bag
-            </option>
+            {Object.entries(orders).map(([id, order]) => (
+              <option key={id} value={id}>
+                {id} - {order.packageName}
+              </option>
+            ))}
           </select>
         </div>
 
         {/* Order Info */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <div className="bg-white rounded-lg shadow-md p-4">
-            <p className="text-sm text-muted-foreground mb-1">Nomor Pesanan</p>
-            <p className="text-lg font-bold text-primary">{selectedOrder}</p>
+            <p className="text-sm text-muted-foreground mb-2">Nomor Pesanan</p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-bold text-primary flex-1 break-all">
+                {currentOrder.id}
+              </p>
+              <button
+                onClick={handleCopyOrderId}
+                className="p-1 hover:bg-slate-100 rounded transition-colors"
+                title="Salin nomor pesanan"
+              >
+                <Copy className="w-4 h-4 text-muted-foreground" />
+              </button>
+            </div>
+            {copiedId && <p className="text-xs text-green-600 mt-1">✓ Disalin</p>}
           </div>
           <div className="bg-white rounded-lg shadow-md p-4">
             <p className="text-sm text-muted-foreground mb-1">Tanggal Pesan</p>
-            <p className="text-lg font-bold">15 Jan 2024</p>
+            <p className="text-lg font-bold">{currentOrder.orderDate}</p>
           </div>
           <div className="bg-white rounded-lg shadow-md p-4">
             <p className="text-sm text-muted-foreground mb-1">Total Harga</p>
-            <p className="text-lg font-bold text-primary">Rp 750.000</p>
+            <p className="text-lg font-bold text-primary">
+              {formatCurrency(currentOrder.totalPrice)}
+            </p>
+          </div>
+          <div className="bg-white rounded-lg shadow-md p-4">
+            <p className="text-sm text-muted-foreground mb-1">Paket</p>
+            <p className="text-lg font-bold">{currentOrder.packageName}</p>
+          </div>
+        </div>
+
+        {/* Customer & Rental Info */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-4">
+            <h3 className="font-semibold mb-3 flex items-center gap-2">
+              <User className="w-5 h-5" />
+              Informasi Penyewa
+            </h3>
+            <p className="text-sm mb-2">
+              <span className="text-muted-foreground">Nama:</span>{" "}
+              <span className="font-semibold">{currentOrder.customerName}</span>
+            </p>
+            <p className="text-sm flex gap-2">
+              <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">
+                {currentOrder.address}
+              </span>
+            </p>
+          </div>
+          <div className="bg-green-50 border-l-4 border-green-500 rounded-lg p-4">
+            <h3 className="font-semibold mb-3 flex items-center gap-2">
+              <Calendar className="w-5 h-5" />
+              Periode Penyewaan
+            </h3>
+            <p className="text-sm mb-2">
+              <span className="text-muted-foreground">Mulai:</span>{" "}
+              <span className="font-semibold">{currentOrder.rentalStartDate}</span>
+            </p>
+            <p className="text-sm">
+              <span className="text-muted-foreground">Selesai:</span>{" "}
+              <span className="font-semibold">{currentOrder.rentalEndDate}</span>
+            </p>
           </div>
         </div>
 
@@ -416,7 +481,7 @@ export default function OrderTracking() {
             </h4>
             <ul className="text-sm text-yellow-700 space-y-1">
               <li>
-                • Barang harus dikembalikan sesuai tanggal yang telah ditentukan
+                ��� Barang harus dikembalikan sesuai tanggal yang telah ditentukan
               </li>
               <li>• Denda keterlambatan: Rp 50.000 per hari</li>
               <li>• Jika ada kerusakan, laporkan segera ke admin</li>
