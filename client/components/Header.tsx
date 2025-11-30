@@ -187,6 +187,20 @@ export default function Header() {
               >
                 Paket
               </Link>
+              <Link
+                to="/how-to-order"
+                className="text-foreground hover:text-primary transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Cara Pesan
+              </Link>
+              <Link
+                to="/order-tracking"
+                className="text-foreground hover:text-primary transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Status Pesanan
+              </Link>
 
               <Link
                 to="/cart"
