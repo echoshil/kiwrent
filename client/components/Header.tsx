@@ -55,6 +55,12 @@ export default function Header() {
             >
               Cara Pesan
             </Link>
+            <Link
+              to="/order-tracking"
+              className="text-foreground hover:text-primary transition-colors"
+            >
+              Status Pesanan
+            </Link>
 
             <Link
               to="/cart"
