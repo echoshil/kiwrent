@@ -7,6 +7,10 @@ import {
   AlertCircle,
   MessageCircle,
   X,
+  Calendar,
+  MapPin,
+  User,
+  Copy,
 } from "lucide-react";
 
 interface TimelineStep {
@@ -19,9 +23,23 @@ interface TimelineStep {
   current: boolean;
 }
 
+interface Order {
+  id: string;
+  packageName: string;
+  status: "payment_pending" | "payment_verified" | "being_prepared" | "shipped" | "received" | "in_use" | "returned" | "completed";
+  orderDate: string;
+  totalPrice: number;
+  rentalStartDate: string;
+  rentalEndDate: string;
+  customerName: string;
+  address: string;
+  currentStep: number;
+}
+
 export default function OrderTracking() {
-  const [selectedOrder, setSelectedOrder] = useState("RC-20240115-ABC123DEF");
+  const [selectedOrderId, setSelectedOrderId] = useState("RC-20240115-ABC123DEF");
   const [chatOpen, setChatOpen] = useState(false);
+  const [copiedId, setCopiedId] = useState(false);
   const [chatMessages, setChatMessages] = useState([
     {
       id: 1,
@@ -43,6 +61,46 @@ export default function OrderTracking() {
     },
   ]);
   const [newMessage, setNewMessage] = useState("");
+
+  // Mock orders data
+  const orders: Record<string, Order> = {
+    "RC-20240115-ABC123DEF": {
+      id: "RC-20240115-ABC123DEF",
+      packageName: "Paket Couple Camp",
+      status: "shipped",
+      orderDate: "15 Jan 2024",
+      totalPrice: 750000,
+      rentalStartDate: "18 Jan 2024",
+      rentalEndDate: "21 Jan 2024",
+      customerName: "Budi Santoso",
+      address: "Jl. Merdeka No. 45, Bandung, Jawa Barat 40123",
+      currentStep: 3,
+    },
+    "RC-20240110-XYZ789ABC": {
+      id: "RC-20240110-XYZ789ABC",
+      packageName: "Tenda + Sleeping Bag",
+      status: "in_use",
+      orderDate: "10 Jan 2024",
+      totalPrice: 450000,
+      rentalStartDate: "12 Jan 2024",
+      rentalEndDate: "20 Jan 2024",
+      customerName: "Siti Nurhaliza",
+      address: "Jl. Sudirman No. 12, Jakarta, DKI Jakarta 12345",
+      currentStep: 5,
+    },
+  };
+
+  const currentOrder = orders[selectedOrderId];
+  const statusStepMap: Record<string, number> = {
+    payment_pending: 0,
+    payment_verified: 1,
+    being_prepared: 2,
+    shipped: 3,
+    received: 4,
+    in_use: 5,
+    returned: 6,
+    completed: 7,
+  };
 
   // Timeline steps
   const timeline: TimelineStep[] = [
