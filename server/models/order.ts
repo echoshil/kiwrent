@@ -1,79 +1,98 @@
-import { Collection, Db, ObjectId } from "mongodb";
+import { PrismaClient } from "@prisma/client";
 import { getDatabase } from "./barang";
 
-export interface OrderItem {
-  barangId: ObjectId;
-  nama: string;
-  harga: number;
-  jumlah: number;
-  durasi: number;
-  subTotal: number;
-}
+const prisma = getDatabase() as PrismaClient;
 
-export interface Order {
-  _id?: ObjectId;
-  userId: ObjectId;
-  items: OrderItem[];
+export async function createOrder(data: {
+  userId: string;
+  items: Array<{
+    barangId: string;
+    nama: string;
+    harga: number;
+    jumlah: number;
+    durasi: number;
+    subTotal: number;
+  }>;
   totalHarga: number;
-  nomorPesanan: string;
-  statusPembayaran: "pending" | "lunas" | "diverifikasi";
-  statusPengiriman: "pending" | "dikirim" | "diterima";
   alamatPengiriman: string;
   noTelepon: string;
   catatan?: string;
-  buktiPembayaran?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-let orderCollection: Collection<Order>;
-
-export function initOrderCollection() {
-  const db = getDatabase();
-  orderCollection = db.collection<Order>("orders");
-  return orderCollection;
-}
-
-export function getOrderCollection() {
-  return orderCollection;
-}
-
-export async function createOrder(order: Omit<Order, "_id" | "createdAt" | "updatedAt" | "nomorPesanan">) {
-  const collection = getOrderCollection();
+  statusPembayaran?: string;
+  statusPengiriman?: string;
+}) {
   const nomorPesanan = `RC-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+  const { items, ...orderData } = data;
 
-  const result = await collection.insertOne({
-    ...order,
-    nomorPesanan,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  });
-
-  return result.insertedId;
-}
-
-export async function getUserOrders(userId: ObjectId) {
-  const collection = getOrderCollection();
-  return collection
-    .find({ userId })
-    .sort({ createdAt: -1 })
-    .toArray();
-}
-
-export async function getOrderById(id: ObjectId) {
-  const collection = getOrderCollection();
-  return collection.findOne({ _id: id });
-}
-
-export async function updateOrderStatus(id: ObjectId, status: "pending" | "dikirim" | "diterima") {
-  const collection = getOrderCollection();
-  return collection.updateOne(
-    { _id: id },
-    {
-      $set: {
-        statusPengiriman: status,
-        updatedAt: new Date(),
+  return prisma.order.create({
+    data: {
+      ...orderData,
+      nomorPesanan,
+      items: {
+        create: items,
       },
-    }
-  );
+    },
+    include: {
+      items: true,
+    },
+  });
+}
+
+export async function getUserOrders(userId: string) {
+  return prisma.order.findMany({
+    where: { userId },
+    include: {
+      items: {
+        include: {
+          barang: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
+
+export async function getOrderById(id: string) {
+  return prisma.order.findUnique({
+    where: { id },
+    include: {
+      items: {
+        include: {
+          barang: true,
+        },
+      },
+    },
+  });
+}
+
+export async function updateOrderStatus(
+  id: string,
+  status: "pending" | "dikirim" | "diterima"
+) {
+  return prisma.order.update({
+    where: { id },
+    data: {
+      statusPengiriman: status,
+    },
+  });
+}
+
+export async function updatePaymentStatus(
+  id: string,
+  status: "pending" | "lunas" | "diverifikasi",
+  buktiPembayaran?: string
+) {
+  return prisma.order.update({
+    where: { id },
+    data: {
+      statusPembayaran: status,
+      buktiPembayaran,
+    },
+  });
+}
+
+export async function initOrderCollection() {
+  // No-op for compatibility
+  return null;
 }
