@@ -1,8 +1,9 @@
-import { Collection, Db, ObjectId } from "mongodb";
+import { PrismaClient } from "@prisma/client";
 import { getDatabase } from "./barang";
 
-export interface User {
-  _id?: ObjectId;
+const prisma = getDatabase() as PrismaClient;
+
+export async function createUser(data: {
   email: string;
   password: string;
   nama: string;
@@ -10,55 +11,38 @@ export interface User {
   alamat?: string;
   kota?: string;
   isAdmin?: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-export interface UserDocument extends User {
-  _id: ObjectId;
-}
-
-let userCollection: Collection<User>;
-
-export function initUserCollection() {
-  const db = getDatabase();
-  userCollection = db.collection<User>("users");
-  return userCollection;
-}
-
-export function getUserCollection() {
-  return userCollection;
-}
-
-export async function createUser(user: Omit<User, "_id" | "createdAt" | "updatedAt">) {
-  const collection = getUserCollection();
-  const result = await collection.insertOne({
-    ...user,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+}) {
+  return prisma.user.create({
+    data,
   });
-  return result.insertedId;
 }
 
 export async function getUserByEmail(email: string) {
-  const collection = getUserCollection();
-  return collection.findOne({ email });
+  return prisma.user.findUnique({
+    where: { email },
+  });
 }
 
-export async function getUserById(id: ObjectId) {
-  const collection = getUserCollection();
-  return collection.findOne({ _id: id });
+export async function getUserById(id: string) {
+  return prisma.user.findUnique({
+    where: { id },
+  });
 }
 
-export async function updateUser(id: ObjectId, data: Partial<User>) {
-  const collection = getUserCollection();
-  return collection.updateOne(
-    { _id: id },
-    {
-      $set: {
-        ...data,
-        updatedAt: new Date(),
-      },
-    }
-  );
+export async function updateUser(
+  id: string,
+  data: Partial<{
+    email: string;
+    password: string;
+    nama: string;
+    noTelepon: string;
+    alamat: string;
+    kota: string;
+    isAdmin: boolean;
+  }>
+) {
+  return prisma.user.update({
+    where: { id },
+    data,
+  });
 }
