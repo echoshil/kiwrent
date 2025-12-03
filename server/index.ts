@@ -2,14 +2,13 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
-import { connectDatabase, getDatabase } from "./models/barang";
+import { connectDatabase } from "./models/barang";
 import { initPaketCollection } from "./models/paket";
 import { initUserCollection } from "./models/user";
 import { initOrderCollection } from "./models/order";
 import {
   getAllBarang,
   getBarangById,
-  getKategori,
   createBarang,
   updateBarang,
   deleteBarang,
@@ -33,15 +32,15 @@ export async function createServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // Connect to MongoDB
+  // Connect to PostgreSQL
   try {
     await connectDatabase();
     initPaketCollection();
     initUserCollection();
     initOrderCollection();
-    console.log("✓ MongoDB initialized successfully");
+    console.log("✓ PostgreSQL initialized successfully");
   } catch (error) {
-    console.error("⚠ Failed to connect to MongoDB:", error);
+    console.error("⚠ Failed to connect to PostgreSQL:", error);
     console.warn("⚠ Running in offline mode - database operations may fail");
   }
 
@@ -62,7 +61,9 @@ export async function createServer() {
   // Barang routes
   app.get("/api/barang", getAllBarang);
   app.get("/api/barang/:id", getBarangById);
-  app.get("/api/kategori", getKategori);
+  app.get("/api/kategori", async (_req, res) => {
+    res.json({ kategori: ["Tenda", "Sleeping Bag", "Backpack", "Lainnya"] });
+  });
   app.post("/api/barang", createBarang);
   app.put("/api/barang/:id", updateBarang);
   app.delete("/api/barang/:id", deleteBarang);
