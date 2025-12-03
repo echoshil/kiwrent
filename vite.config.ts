@@ -1,48 +1,36 @@
-import { defineConfig, Plugin } from "vite";
+import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
-  server: {
-    host: "::",
-    port: 8080,
-    fs: {
-      allow: ["./client", "./shared"],
-      deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "server/**"],
-    },
-    middlewareMode: false,
-  },
-  build: {
-    outDir: "dist/spa",
-  },
-  plugins: [react(), ...(mode === "development" ? [expressPlugin()] : [])],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./client"),
-      "@shared": path.resolve(__dirname, "./shared"),
-    },
-  },
-}));
+export default defineConfig(async ({ mode }) => {
+  const plugins = [react()];
 
-function expressPlugin(): Plugin {
+  // Only load express plugin in development mode
+  if (mode === "development") {
+    const { expressPlugin } = await import("./vite.dev-plugin");
+    plugins.push(expressPlugin());
+  }
+
   return {
-    name: "express-plugin",
-    apply: "serve",
-    async configureServer(server) {
-      console.log("[EXPRESS] Initializing Express server...");
-      try {
-        const { createServer } = await import("./server");
-        const app = await createServer();
-        console.log(
-          "[EXPRESS] Express server initialized, adding middleware",
-        );
-        server.middlewares.use(app);
-        console.log("[EXPRESS] Express middleware added");
-      } catch (err) {
-        console.error("[EXPRESS] Error initializing Express:", err);
-      }
-      return undefined;
+    server: {
+      host: "::",
+      port: 8080,
+      fs: {
+        allow: ["./client", "./shared"],
+        deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "server/**"],
+      },
+      middlewareMode: false,
+    },
+    build: {
+      outDir: "dist/spa",
+    },
+    plugins,
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./client"),
+        "@shared": path.resolve(__dirname, "./shared"),
+      },
     },
   };
-}
+});
