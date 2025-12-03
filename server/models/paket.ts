@@ -1,31 +1,83 @@
-import { Collection, Db } from "mongodb";
+import { PrismaClient } from "@prisma/client";
 import { getDatabase } from "./barang";
 
-export interface PaketItem {
-  barangId: string;
-  nama: string;
-  jumlah: number;
+const prisma = getDatabase() as PrismaClient;
+
+export async function getAllPaket() {
+  return prisma.paket.findMany({
+    include: {
+      items: {
+        include: {
+          barang: true,
+        },
+      },
+    },
+  });
 }
 
-export interface Paket {
-  _id?: string;
+export async function getPaketById(id: string) {
+  return prisma.paket.findUnique({
+    where: { id },
+    include: {
+      items: {
+        include: {
+          barang: true,
+        },
+      },
+    },
+  });
+}
+
+export async function createPaket(data: {
   nama: string;
   deskripsi: string;
   harga: number;
   foto: string;
-  items: PaketItem[];
-  createdAt?: Date;
-  updatedAt?: Date;
+  items?: Array<{
+    barangId: string;
+    nama: string;
+    jumlah: number;
+  }>;
+}) {
+  const { items, ...paketData } = data;
+
+  return prisma.paket.create({
+    data: {
+      ...paketData,
+      items: items
+        ? {
+            create: items,
+          }
+        : undefined,
+    },
+    include: {
+      items: true,
+    },
+  });
 }
 
-let paketCollection: Collection<Paket>;
-
-export function initPaketCollection() {
-  const db = getDatabase();
-  paketCollection = db.collection<Paket>("paket");
-  return paketCollection;
+export async function updatePaket(
+  id: string,
+  data: Partial<{
+    nama: string;
+    deskripsi: string;
+    harga: number;
+    foto: string;
+  }>
+) {
+  return prisma.paket.update({
+    where: { id },
+    data,
+  });
 }
 
-export function getPaketCollection() {
-  return paketCollection;
+export async function deletePaket(id: string) {
+  return prisma.paket.delete({
+    where: { id },
+  });
+}
+
+export async function initPaketCollection() {
+  // No-op for compatibility
+  return null;
 }
