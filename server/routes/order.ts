@@ -1,8 +1,15 @@
 import { RequestHandler } from "express";
-import { createOrder, getUserOrders, getOrderById, updateOrderStatus } from "../models/order";
-import { getBarangCollection } from "../models/barang";
-import { ObjectId } from "mongodb";
+import {
+  createOrder,
+  getUserOrders,
+  getOrderById,
+  updateOrderStatus,
+  updatePaymentStatus,
+  getDatabase,
+} from "../models/order";
+import { getBarangById } from "../models/barang";
 import { verifyToken } from "../utils/auth";
+import { getUserById } from "../models/user";
 
 export interface OrderResponse {
   message: string;
@@ -32,7 +39,9 @@ export const createOrderHandler: RequestHandler = async (req, res) => {
     }
 
     if (!nama || !alamatPengiriman || !noTelepon) {
-      res.status(400).json({ message: "Nama, alamat, dan nomor telepon harus diisi" });
+      res
+        .status(400)
+        .json({ message: "Nama, alamat, dan nomor telepon harus diisi" });
       return;
     }
 
@@ -42,14 +51,11 @@ export const createOrderHandler: RequestHandler = async (req, res) => {
     }
 
     // Calculate total and validate items
-    const barangCollection = getBarangCollection();
     let totalHarga = 0;
     const processedItems = [];
 
     for (const item of items) {
-      const barang = await barangCollection.findOne({
-        _id: new ObjectId(item.barangId),
-      });
+      const barang = await getBarangById(item.barangId);
 
       if (!barang) {
         res.status(404).json({ message: `Barang ${item.barangId} tidak ditemukan` });
@@ -67,7 +73,7 @@ export const createOrderHandler: RequestHandler = async (req, res) => {
       totalHarga += subTotal;
 
       processedItems.push({
-        barangId: new ObjectId(item.barangId),
+        barangId: item.barangId,
         nama: barang.nama,
         harga: barang.harga,
         jumlah: item.jumlah,
@@ -77,8 +83,8 @@ export const createOrderHandler: RequestHandler = async (req, res) => {
     }
 
     // Create order
-    const orderId = await createOrder({
-      userId: new ObjectId(payload.userId),
+    const order = await createOrder({
+      userId: payload.userId,
       items: processedItems,
       totalHarga,
       statusPembayaran: "pending",
@@ -92,7 +98,7 @@ export const createOrderHandler: RequestHandler = async (req, res) => {
     res.status(201).json({
       message: "Pesanan berhasil dibuat",
       data: {
-        orderId: orderId.toString(),
+        orderId: order.id,
         totalHarga,
       },
     });
@@ -119,7 +125,7 @@ export const getUserOrdersHandler: RequestHandler = async (req, res) => {
       return;
     }
 
-    const orders = await getUserOrders(new ObjectId(payload.userId));
+    const orders = await getUserOrders(payload.userId);
 
     res.json({
       message: "Pesanan berhasil diambil",
@@ -150,12 +156,7 @@ export const getOrderByIdHandler: RequestHandler = async (req, res) => {
       return;
     }
 
-    if (!ObjectId.isValid(id)) {
-      res.status(400).json({ message: "ID pesanan tidak valid" });
-      return;
-    }
-
-    const order = await getOrderById(new ObjectId(id));
+    const order = await getOrderById(id);
 
     if (!order) {
       res.status(404).json({ message: "Pesanan tidak ditemukan" });
@@ -163,7 +164,7 @@ export const getOrderByIdHandler: RequestHandler = async (req, res) => {
     }
 
     // Check if user owns this order
-    if (order.userId.toString() !== payload.userId) {
+    if (order.userId !== payload.userId) {
       res.status(403).json({ message: "Anda tidak memiliki akses ke pesanan ini" });
       return;
     }
@@ -203,18 +204,18 @@ export const updateOrderStatusHandler: RequestHandler = async (req, res) => {
       return;
     }
 
-    const order = await getOrderById(new ObjectId(id));
+    const order = await getOrderById(id);
     if (!order) {
       res.status(404).json({ message: "Pesanan tidak ditemukan" });
       return;
     }
 
-    if (order.userId.toString() !== payload.userId) {
+    if (order.userId !== payload.userId) {
       res.status(403).json({ message: "Anda tidak memiliki akses ke pesanan ini" });
       return;
     }
 
-    await updateOrderStatus(new ObjectId(id), status);
+    await updateOrderStatus(id, status as "pending" | "dikirim" | "diterima");
 
     res.json({
       message: "Status pesanan berhasil diupdate",
@@ -244,30 +245,21 @@ export const verifyPaymentHandler: RequestHandler = async (req, res) => {
       return;
     }
 
-    const collection = require("../models/order").getOrderCollection();
-    const userCollection = require("../models/user").getUserCollection();
-
-    const user = await userCollection.findOne({ _id: new ObjectId(payload.userId) });
+    const user = await getUserById(payload.userId);
     if (!user?.isAdmin) {
-      res.status(403).json({ message: "Hanya admin yang dapat memverifikasi pembayaran" });
+      res
+        .status(403)
+        .json({ message: "Hanya admin yang dapat memverifikasi pembayaran" });
       return;
     }
 
-    const order = await getOrderById(new ObjectId(id));
+    const order = await getOrderById(id);
     if (!order) {
       res.status(404).json({ message: "Pesanan tidak ditemukan" });
       return;
     }
 
-    await collection.updateOne(
-      { _id: new ObjectId(id) },
-      {
-        $set: {
-          statusPembayaran: "lunas",
-          updatedAt: new Date(),
-        },
-      }
-    );
+    await updatePaymentStatus(id, "lunas");
 
     res.json({
       message: "Pembayaran berhasil diverifikasi",
@@ -297,30 +289,19 @@ export const rejectPaymentHandler: RequestHandler = async (req, res) => {
       return;
     }
 
-    const collection = require("../models/order").getOrderCollection();
-    const userCollection = require("../models/user").getUserCollection();
-
-    const user = await userCollection.findOne({ _id: new ObjectId(payload.userId) });
+    const user = await getUserById(payload.userId);
     if (!user?.isAdmin) {
       res.status(403).json({ message: "Hanya admin yang dapat menolak pembayaran" });
       return;
     }
 
-    const order = await getOrderById(new ObjectId(id));
+    const order = await getOrderById(id);
     if (!order) {
       res.status(404).json({ message: "Pesanan tidak ditemukan" });
       return;
     }
 
-    await collection.updateOne(
-      { _id: new ObjectId(id) },
-      {
-        $set: {
-          statusPembayaran: "pending",
-          updatedAt: new Date(),
-        },
-      }
-    );
+    await updatePaymentStatus(id, "pending");
 
     res.json({
       message: "Pembayaran ditolak. Pesanan kembali menunggu pembayaran",
