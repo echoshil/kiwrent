@@ -222,6 +222,18 @@ async function seedDatabase() {
     });
     console.log(`✓ Inserted ${insertedBarang.count} barang items`);
 
+    // Seed admin user
+    const adminPassword = hashPassword("123456789Ok");
+    const adminUser = await prisma.user.create({
+      data: {
+        email: "kiikiwww@gmail.com",
+        password: adminPassword,
+        nama: "Admin RentCamps",
+        isAdmin: true,
+      },
+    });
+    console.log(`✓ Created admin user: ${adminUser.email}`);
+
     console.log("✓ Database seeding completed successfully!");
   } catch (error) {
     console.error("✗ Error seeding database:", error);
