@@ -1,12 +1,5 @@
 import { RequestHandler } from "express";
-import {
-  getAllBarang,
-  getBarangById,
-  createBarang,
-  updateBarang,
-  deleteBarang,
-  getDatabase,
-} from "../models/barang";
+import * as barangModel from "../models/barang";
 import { verifyToken } from "../utils/auth";
 import { getUserById } from "../models/user";
 
