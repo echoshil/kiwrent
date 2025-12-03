@@ -1,6 +1,5 @@
 import { RequestHandler } from "express";
-import { getPaketCollection } from "../models/paket";
-import { ObjectId } from "mongodb";
+import { getAllPaket, getPaketById } from "../models/paket";
 
 export interface PaketResponse {
   message: string;
@@ -8,10 +7,9 @@ export interface PaketResponse {
   error?: string;
 }
 
-export const getAllPaket: RequestHandler = async (req, res) => {
+export const getAllPaketHandler: RequestHandler = async (req, res) => {
   try {
-    const collection = getPaketCollection();
-    const items = await collection.find({}).toArray();
+    const items = await getAllPaket();
 
     res.json({
       message: "Paket retrieved successfully",
@@ -26,17 +24,11 @@ export const getAllPaket: RequestHandler = async (req, res) => {
   }
 };
 
-export const getPaketById: RequestHandler = async (req, res) => {
+export const getPaketByIdHandler: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
-    const collection = getPaketCollection();
 
-    if (!ObjectId.isValid(id)) {
-      res.status(400).json({ message: "Invalid paket ID" });
-      return;
-    }
-
-    const item = await collection.findOne({ _id: new ObjectId(id) });
+    const item = await getPaketById(id);
 
     if (!item) {
       res.status(404).json({ message: "Paket not found" });
@@ -55,3 +47,7 @@ export const getPaketById: RequestHandler = async (req, res) => {
     });
   }
 };
+
+// Export both handler and old names for compatibility
+export const getAllPaket = getAllPaketHandler;
+export const getPaketById = getPaketByIdHandler;
