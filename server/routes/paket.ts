@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { getAllPaket, getPaketById } from "../models/paket";
+import * as paketModel from "../models/paket";
 
 export interface PaketResponse {
   message: string;
@@ -7,9 +7,9 @@ export interface PaketResponse {
   error?: string;
 }
 
-export const getAllPaketHandler: RequestHandler = async (req, res) => {
+const getAllPaketHandler: RequestHandler = async (req, res) => {
   try {
-    const items = await getAllPaket();
+    const items = await paketModel.getAllPaket();
 
     res.json({
       message: "Paket retrieved successfully",
@@ -24,11 +24,11 @@ export const getAllPaketHandler: RequestHandler = async (req, res) => {
   }
 };
 
-export const getPaketByIdHandler: RequestHandler = async (req, res) => {
+const getPaketByIdHandler: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const item = await getPaketById(id);
+    const item = await paketModel.getPaketById(id);
 
     if (!item) {
       res.status(404).json({ message: "Paket not found" });
