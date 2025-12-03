@@ -1,60 +1,70 @@
-import { MongoClient, Db, Collection } from "mongodb";
+import { PrismaClient } from "@prisma/client";
 
-export interface Barang {
-  _id?: string;
+const prisma = new PrismaClient();
+
+export async function connectDatabase() {
+  try {
+    await prisma.$connect();
+    console.log("✓ Connected to PostgreSQL via Neon");
+    return prisma;
+  } catch (error) {
+    console.error("✗ PostgreSQL connection failed:", error);
+    throw error;
+  }
+}
+
+export function getDatabase() {
+  return prisma;
+}
+
+export async function getAllBarang() {
+  return prisma.barang.findMany();
+}
+
+export async function getBarangById(id: string) {
+  return prisma.barang.findUnique({
+    where: { id },
+  });
+}
+
+export async function getBarangByKategori(kategori: string) {
+  return prisma.barang.findMany({
+    where: { kategori },
+  });
+}
+
+export async function createBarang(data: {
   nama: string;
   kategori: string;
   harga: number;
   stok: number;
   foto: string;
   deskripsi: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-let db: Db;
-let barangCollection: Collection<Barang>;
-
-export async function connectDatabase() {
-  const mongoUri =
-    process.env.MONGODB_URI ||
-    "mongodb+srv://dikirifala6_db_user:8XQqBkEzzaAVIf6k@rent.pm8mmxk.mongodb.net/?appName=rent";
-  console.log(
-    "[MongoDB] Attempting to connect with URI:",
-    mongoUri.substring(0, 30) + "...",
-  );
-
-  const client = new MongoClient(mongoUri, {
-    serverSelectionTimeoutMS: 10000,
-    socketTimeoutMS: 10000,
-    retryWrites: false,
-    ...(process.env.NODE_ENV === "development" && {
-      tls: true,
-      tlsInsecure: true,
-    }),
+}) {
+  return prisma.barang.create({
+    data,
   });
-
-  try {
-    await client.connect();
-    db = client.db("rentcamps");
-    barangCollection = db.collection<Barang>("barang");
-
-    // Create indexes for better search performance
-    await barangCollection.createIndex({ nama: "text", deskripsi: "text" });
-    await barangCollection.createIndex({ kategori: 1 });
-
-    console.log("✓ Connected to MongoDB");
-    return db;
-  } catch (error) {
-    console.error("✗ MongoDB connection failed:", error);
-    throw error;
-  }
 }
 
-export function getBarangCollection() {
-  return barangCollection;
+export async function updateBarang(
+  id: string,
+  data: Partial<{
+    nama: string;
+    kategori: string;
+    harga: number;
+    stok: number;
+    foto: string;
+    deskripsi: string;
+  }>
+) {
+  return prisma.barang.update({
+    where: { id },
+    data,
+  });
 }
 
-export function getDatabase() {
-  return db;
+export async function deleteBarang(id: string) {
+  return prisma.barang.delete({
+    where: { id },
+  });
 }
