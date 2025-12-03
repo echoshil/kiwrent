@@ -21,7 +21,7 @@ const checkAdminRole = async (token: string): Promise<boolean> => {
   }
 };
 
-export const getAllBarangHandler: RequestHandler = async (req, res) => {
+const getAllBarangHandler: RequestHandler = async (req, res) => {
   try {
     const { kategori, search, page = "1", limit = "12" } = req.query;
 
@@ -29,7 +29,7 @@ export const getAllBarangHandler: RequestHandler = async (req, res) => {
     const limitNum = parseInt(limit as string) || 12;
     const skip = (pageNum - 1) * limitNum;
 
-    const prisma = getDatabase();
+    const prisma = barangModel.getDatabase();
 
     let where: any = {};
 
@@ -70,11 +70,11 @@ export const getAllBarangHandler: RequestHandler = async (req, res) => {
   }
 };
 
-export const getBarangByIdHandler: RequestHandler = async (req, res) => {
+const getBarangByIdHandler: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const item = await getBarangById(id);
+    const item = await barangModel.getBarangById(id);
 
     if (!item) {
       res.status(404).json({ message: "Barang not found" });
@@ -96,7 +96,7 @@ export const getBarangByIdHandler: RequestHandler = async (req, res) => {
 
 export const getKategori: RequestHandler = async (req, res) => {
   try {
-    const prisma = getDatabase();
+    const prisma = barangModel.getDatabase();
     const categories = await prisma.barang.findMany({
       select: { kategori: true },
       distinct: ["kategori"],
@@ -120,7 +120,7 @@ export const getKategori: RequestHandler = async (req, res) => {
   }
 };
 
-export const createBarangHandler: RequestHandler = async (req, res) => {
+const createBarangHandler: RequestHandler = async (req, res) => {
   try {
     const token = req.headers.authorization?.replace("Bearer ", "");
     if (!token) {
@@ -143,7 +143,7 @@ export const createBarangHandler: RequestHandler = async (req, res) => {
       return;
     }
 
-    const item = await createBarang({
+    const item = await barangModel.createBarang({
       nama,
       kategori,
       harga: parseFloat(harga),
@@ -165,7 +165,7 @@ export const createBarangHandler: RequestHandler = async (req, res) => {
   }
 };
 
-export const updateBarangHandler: RequestHandler = async (req, res) => {
+const updateBarangHandler: RequestHandler = async (req, res) => {
   try {
     const token = req.headers.authorization?.replace("Bearer ", "");
     if (!token) {
@@ -193,7 +193,7 @@ export const updateBarangHandler: RequestHandler = async (req, res) => {
     if (foto) updateData.foto = foto;
     if (deskripsi) updateData.deskripsi = deskripsi;
 
-    const item = await updateBarang(id, updateData);
+    const item = await barangModel.updateBarang(id, updateData);
 
     if (!item) {
       res.status(404).json({ message: "Barang tidak ditemukan" });
@@ -213,7 +213,7 @@ export const updateBarangHandler: RequestHandler = async (req, res) => {
   }
 };
 
-export const deleteBarangHandler: RequestHandler = async (req, res) => {
+const deleteBarangHandler: RequestHandler = async (req, res) => {
   try {
     const token = req.headers.authorization?.replace("Bearer ", "");
     if (!token) {
@@ -231,7 +231,7 @@ export const deleteBarangHandler: RequestHandler = async (req, res) => {
 
     const { id } = req.params;
 
-    const item = await deleteBarang(id);
+    const item = await barangModel.deleteBarang(id);
 
     res.json({
       message: "Barang berhasil dihapus",
