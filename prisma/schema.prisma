@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String
+  nama      String
+  noTelepon String?
+  alamat    String?
+  kota      String?
+  isAdmin   Boolean    @default(false)
+  orders    Order[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Barang {
+  id          String   @id @default(cuid())
+  nama        String
+  kategori    String
+  harga       Int
+  stok        Int
+  foto        String
+  deskripsi   String
+  paketItems  PaketItem[]
+  orderItems  OrderItem[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@fulltext([nama, deskripsi])
+  @@index([kategori])
+}
+
+model Paket {
+  id        String      @id @default(cuid())
+  nama      String
+  deskripsi String
+  harga     Int
+  foto      String
+  items     PaketItem[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model PaketItem {
+  id       String  @id @default(cuid())
+  paketId  String
+  paket    Paket   @relation(fields: [paketId], references: [id], onDelete: Cascade)
+  barangId String
+  barang   Barang  @relation(fields: [barangId], references: [id])
+  nama     String
+  jumlah   Int
+}
+
+model Order {
+  id                String      @id @default(cuid())
+  userId            String
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items             OrderItem[]
+  totalHarga        Int
+  nomorPesanan      String      @unique
+  statusPembayaran  String      @default("pending")
+  statusPengiriman  String      @default("pending")
+  alamatPengiriman  String
+  noTelepon         String
+  catatan           String?
+  buktiPembayaran   String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+}
+
+model OrderItem {
+  id       String @id @default(cuid())
+  orderId  String
+  order    Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  barangId String
+  barang   Barang @relation(fields: [barangId], references: [id])
+  nama     String
+  harga    Int
+  jumlah   Int
+  durasi   Int
+  subTotal Int
+}
