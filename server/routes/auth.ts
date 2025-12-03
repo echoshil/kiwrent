@@ -1,7 +1,6 @@
 import { RequestHandler } from "express";
-import { createUser, getUserByEmail, getUserById } from "../models/user";
+import { createUser, getUserByEmail, getUserById, updateUser } from "../models/user";
 import { hashPassword, verifyPassword, generateToken, verifyToken } from "../utils/auth";
-import { ObjectId } from "mongodb";
 
 export interface AuthResponse {
   message: string;
@@ -50,7 +49,7 @@ export const register: RequestHandler = async (req, res) => {
 
     // Create user
     const hashedPassword = hashPassword(password);
-    const userId = await createUser({
+    const user = await createUser({
       email,
       password: hashedPassword,
       nama,
@@ -59,7 +58,7 @@ export const register: RequestHandler = async (req, res) => {
 
     // Generate token
     const token = generateToken({
-      userId: userId.toString(),
+      userId: user.id,
       email,
     });
 
@@ -67,7 +66,7 @@ export const register: RequestHandler = async (req, res) => {
       message: "Pendaftaran berhasil",
       token,
       data: {
-        userId: userId.toString(),
+        userId: user.id,
         email,
         nama,
       },
@@ -112,7 +111,7 @@ export const login: RequestHandler = async (req, res) => {
 
     // Generate token
     const token = generateToken({
-      userId: user._id!.toString(),
+      userId: user.id,
       email: user.email,
     });
 
@@ -120,7 +119,7 @@ export const login: RequestHandler = async (req, res) => {
       message: "Login berhasil",
       token,
       data: {
-        userId: user._id!.toString(),
+        userId: user.id,
         email: user.email,
         nama: user.nama,
       },
@@ -152,7 +151,7 @@ export const me: RequestHandler = async (req, res) => {
       return;
     }
 
-    const user = await getUserById(new ObjectId(payload.userId));
+    const user = await getUserById(payload.userId);
     if (!user) {
       res.status(404).json({
         message: "User tidak ditemukan",
@@ -163,7 +162,7 @@ export const me: RequestHandler = async (req, res) => {
     res.json({
       message: "User profile retrieved",
       data: {
-        userId: user._id!.toString(),
+        userId: user.id,
         email: user.email,
         nama: user.nama,
         noTelepon: user.noTelepon,
@@ -199,35 +198,21 @@ export const updateProfile: RequestHandler = async (req, res) => {
     }
 
     const { nama, noTelepon, alamat, kota } = req.body;
-    const collection = getUserByEmail(""); // Get collection via side effect
-    const usersCollection = require("../models/user").getUserCollection();
 
-    const result = await usersCollection.updateOne(
-      { _id: new ObjectId(payload.userId) },
-      {
-        $set: {
-          nama: nama || undefined,
-          noTelepon: noTelepon || undefined,
-          alamat: alamat || undefined,
-          kota: kota || undefined,
-          updatedAt: new Date(),
-        },
-      }
-    );
+    const updateData: any = {};
+    if (nama) updateData.nama = nama;
+    if (noTelepon) updateData.noTelepon = noTelepon;
+    if (alamat) updateData.alamat = alamat;
+    if (kota) updateData.kota = kota;
 
-    if (result.matchedCount === 0) {
-      res.status(404).json({
-        message: "User tidak ditemukan",
-      });
-      return;
-    }
+    await updateUser(payload.userId, updateData);
 
-    const user = await getUserById(new ObjectId(payload.userId));
+    const user = await getUserById(payload.userId);
 
     res.json({
       message: "Profile berhasil diupdate",
       data: {
-        userId: user?._id?.toString(),
+        userId: user?.id,
         email: user?.email,
         nama: user?.nama,
         noTelepon: user?.noTelepon,
