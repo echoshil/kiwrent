@@ -46,3 +46,8 @@ export async function updateUser(
     data,
   });
 }
+
+export async function initUserCollection() {
+  // No-op for compatibility
+  return null;
+}
