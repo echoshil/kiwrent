@@ -19,7 +19,10 @@ export default defineConfig((env) => ({
           server.middlewares.use(app);
           console.log("[EXPRESS] Dev middleware loaded");
         } catch (err: any) {
-          console.warn("[DEV] Warning: Could not load dev server:", err.message);
+          console.warn(
+            "[DEV] Warning: Could not load dev server:",
+            err.message,
+          );
           // Don't fail the dev server if this doesn't work
         }
       },
