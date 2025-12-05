@@ -3,20 +3,25 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ command, mode }) => {
+export default defineConfig(({ command }) => {
   const plugins = [react()];
 
-  // IMPORTANT: Only add dev plugin when actually running dev server, NOT during build
+  // CRITICAL: Only load server code when running `vite` (dev server)
+  // NOT during `vite build` (Netlify production build)
   if (command === "serve") {
-    // Dynamically import only in development/serve mode
-    require.resolve("./vite.dev-plugin.ts");
     plugins.push({
       name: "dev-server",
       apply: "serve",
       async configureServer(server) {
-        const { expressPlugin } = await import("./vite.dev-plugin");
-        const plugin = expressPlugin();
-        return plugin.configureServer?.(server);
+        try {
+          // Only import server code in development serve mode
+          const { createServer } = await import("./server");
+          const app = await createServer();
+          console.log("[EXPRESS] Express server initialized, adding middleware");
+          server.middlewares.use(app);
+        } catch (err) {
+          console.error("[EXPRESS] Error initializing Express:", err);
+        }
       },
     });
   }
