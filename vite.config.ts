@@ -7,21 +7,24 @@ export default defineConfig(({ command }) => {
   const plugins = [react()];
 
   // CRITICAL: Only load server code when running `vite serve` (dev)
-  // During `vite build`, this code is skipped completely
+  // During `vite build`, this code is completely skipped
   if (command === "serve") {
-    // Create a plugin that loads server code safely
-    const devServerPlugin = {
-      name: "dev-express",
-      apply: "serve" as const,
+    plugins.push({
+      name: "dev-express-server",
+      apply: "serve",
       async configureServer(server: any) {
-        // Use dynamic import only when this method is actually called
-        const { createServer } = await import("./server/index");
-        const app = await createServer();
-        server.middlewares.use(app);
-        console.log("[EXPRESS] Express server ready");
+        try {
+          // Only import server code when this hook is called (dev mode only)
+          // This import is NOT analyzed during build phase
+          const mod = await import("./server/index");
+          const app = await mod.createServer();
+          server.middlewares.use(app);
+          console.log("[EXPRESS] Dev server ready");
+        } catch (err) {
+          console.warn("[EXPRESS] Dev server error:", err);
+        }
       },
-    };
-    plugins.push(devServerPlugin);
+    });
   }
 
   return {
@@ -39,11 +42,11 @@ export default defineConfig(({ command }) => {
       sourcemap: false,
       minify: "esbuild",
       rollupOptions: {
-        external: ["@prisma/client", "@prisma/client/runtime"],
+        external: ["@prisma/client"],
       },
     },
     optimizeDeps: {
-      exclude: ["@prisma/client", "dotenv"],
+      exclude: ["@prisma/client", "@prisma/client/runtime", "dotenv"],
     },
     plugins,
     resolve: {
