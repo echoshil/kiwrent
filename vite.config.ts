@@ -6,27 +6,23 @@ import path from "path";
 export default defineConfig(({ command }) => {
   const plugins = [react()];
 
-  // CRITICAL: Only load server code when running `vite serve` (dev)
-  // During `vite build`, skip this completely to avoid static analysis of server imports
-  if (command === "serve") {
-    plugins.push({
-      name: "dev-express-server",
-      apply: "serve",
-      async configureServer(server: any) {
-        try {
-          // Use a computed module name so Vite cannot statically analyze it
-          // This prevents Vite from seeing "server" as an import during build
-          const serverPath = [".", "server", "index"].join("/");
-          const mod = await import(/* @vite-ignore */ serverPath);
-          const app = await mod.createServer();
-          server.middlewares.use(app);
-          console.log("[EXPRESS] Dev server ready");
-        } catch (err) {
-          console.warn("[EXPRESS] Dev server error:", err);
-        }
-      },
-    });
-  }
+  // Add dev server plugin - only applied during serve, never during build
+  plugins.push({
+    name: "dev-express-server",
+    apply: "serve", // This ensures it only runs during vite serve, never during vite build
+    async configureServer(server: any) {
+      try {
+        // Dynamically construct import path to prevent static analysis
+        const basePath = process.cwd();
+        const serverModule = await import(path.join(basePath, "server/index.ts"));
+        const app = await serverModule.createServer();
+        server.middlewares.use(app);
+        console.log("[EXPRESS] Dev server initialized");
+      } catch (err) {
+        console.error("[EXPRESS] Error initializing dev server:", err);
+      }
+    },
+  });
 
   return {
     server: {
