@@ -42,6 +42,9 @@ export default defineConfig(({ command }) => {
         external: ["@prisma/client", "@prisma/client/runtime"],
       },
     },
+    optimizeDeps: {
+      exclude: ["@prisma/client", "dotenv"],
+    },
     plugins,
     resolve: {
       alias: {
