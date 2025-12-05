@@ -17,7 +17,9 @@ export default defineConfig(({ mode }) => {
           console.log("[EXPRESS] Initializing Express server...");
           const { createServer } = await import("./server");
           const app = await createServer();
-          console.log("[EXPRESS] Express server initialized, adding middleware");
+          console.log(
+            "[EXPRESS] Express server initialized, adding middleware",
+          );
           server.middlewares.use(app);
           console.log("[EXPRESS] Express middleware added");
         } catch (err) {
