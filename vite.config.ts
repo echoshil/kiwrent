@@ -3,31 +3,22 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ command, mode }) => {
   const plugins = [react()];
 
-  // Only load express plugin in development mode
-  // Use a synchronous check to prevent Vite from analyzing dev files during build
-  if (mode === "development" && process.env.NODE_ENV !== "production") {
-    // Lazy load the dev plugin to prevent bundling server code
-    const devConfig = {
+  // IMPORTANT: Only add dev plugin when actually running dev server, NOT during build
+  if (command === "serve") {
+    // Dynamically import only in development/serve mode
+    require.resolve("./vite.dev-plugin.ts");
+    plugins.push({
+      name: "dev-server",
       apply: "serve",
-      async configureServer(server: any) {
-        try {
-          console.log("[EXPRESS] Initializing Express server...");
-          const { createServer } = await import("./server");
-          const app = await createServer();
-          console.log(
-            "[EXPRESS] Express server initialized, adding middleware",
-          );
-          server.middlewares.use(app);
-          console.log("[EXPRESS] Express middleware added");
-        } catch (err) {
-          console.error("[EXPRESS] Error initializing Express:", err);
-        }
+      async configureServer(server) {
+        const { expressPlugin } = await import("./vite.dev-plugin");
+        const plugin = expressPlugin();
+        return plugin.configureServer?.(server);
       },
-    };
-    plugins.push(devConfig);
+    });
   }
 
   return {
@@ -44,6 +35,9 @@ export default defineConfig(({ mode }) => {
       outDir: "dist/spa",
       sourcemap: false,
       minify: "esbuild",
+      rollupOptions: {
+        external: ["@prisma/client"],
+      },
     },
     plugins,
     resolve: {
@@ -51,9 +45,6 @@ export default defineConfig(({ mode }) => {
         "@": path.resolve(__dirname, "./client"),
         "@shared": path.resolve(__dirname, "./shared"),
       },
-    },
-    ssr: {
-      external: ["@prisma/client"],
     },
   };
 });
