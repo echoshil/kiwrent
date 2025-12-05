@@ -1,21 +1,26 @@
 import { Plugin } from "vite";
 
-export function expressPlugin(): Plugin {
+// This file is only loaded during development (serve mode)
+// It should never be imported during build
+export function createDevPlugin(): Plugin {
   return {
-    name: "express-plugin",
+    name: "dev-express-server",
     apply: "serve",
     async configureServer(server) {
-      console.log("[EXPRESS] Initializing Express server...");
+      // Only import and use server code during serve mode
       try {
-        const { createServer } = await import("./server");
-        const app = await createServer();
-        console.log("[EXPRESS] Express server initialized, adding middleware");
-        server.middlewares.use(app);
-        console.log("[EXPRESS] Express middleware added");
+        // Dynamically require to avoid bundling during build
+        const serverModule = await import("./server/index.js");
+        const { createServer } = serverModule;
+
+        if (createServer && typeof createServer === "function") {
+          const app = await createServer();
+          server.middlewares.use(app);
+          console.log("[EXPRESS] Express server ready");
+        }
       } catch (err) {
-        console.error("[EXPRESS] Error initializing Express:", err);
+        console.warn("[EXPRESS] Could not load dev server:", err);
       }
-      return undefined;
     },
   };
 }
