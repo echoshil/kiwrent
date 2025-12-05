@@ -7,16 +7,17 @@ export default defineConfig(({ command }) => {
   const plugins = [react()];
 
   // CRITICAL: Only load server code when running `vite serve` (dev)
-  // During `vite build`, this code is completely skipped
+  // During `vite build`, skip this completely to avoid static analysis of server imports
   if (command === "serve") {
     plugins.push({
       name: "dev-express-server",
       apply: "serve",
       async configureServer(server: any) {
         try {
-          // Only import server code when this hook is called (dev mode only)
-          // This import is NOT analyzed during build phase
-          const mod = await import("./server/index");
+          // Use a computed module name so Vite cannot statically analyze it
+          // This prevents Vite from seeing "server" as an import during build
+          const serverPath = [".", "server", "index"].join("/");
+          const mod = await import(/* @vite-ignore */ serverPath);
           const app = await mod.createServer();
           server.middlewares.use(app);
           console.log("[EXPRESS] Dev server ready");
