@@ -6,24 +6,22 @@ import path from "path";
 export default defineConfig(({ command }) => {
   const plugins = [react()];
 
-  // CRITICAL: Only load server code when running `vite` (dev server)
-  // NOT during `vite build` (Netlify production build)
+  // CRITICAL: Only load server code when running `vite serve` (dev)
+  // During `vite build`, this code is skipped completely
   if (command === "serve") {
-    plugins.push({
-      name: "dev-server",
-      apply: "serve",
-      async configureServer(server) {
-        try {
-          // Only import server code in development serve mode
-          const { createServer } = await import("./server");
-          const app = await createServer();
-          console.log("[EXPRESS] Express server initialized, adding middleware");
-          server.middlewares.use(app);
-        } catch (err) {
-          console.error("[EXPRESS] Error initializing Express:", err);
-        }
+    // Create a plugin that loads server code safely
+    const devServerPlugin = {
+      name: "dev-express",
+      apply: "serve" as const,
+      async configureServer(server: any) {
+        // Use dynamic import only when this method is actually called
+        const { createServer } = await import("./server/index");
+        const app = await createServer();
+        server.middlewares.use(app);
+        console.log("[EXPRESS] Express server ready");
       },
-    });
+    };
+    plugins.push(devServerPlugin);
   }
 
   return {
@@ -41,7 +39,7 @@ export default defineConfig(({ command }) => {
       sourcemap: false,
       minify: "esbuild",
       rollupOptions: {
-        external: ["@prisma/client"],
+        external: ["@prisma/client", "@prisma/client/runtime"],
       },
     },
     plugins,
