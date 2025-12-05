@@ -3,17 +3,29 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
 // https://vitejs.dev/config/
-export default defineConfig(async ({ mode }) => {
+export default defineConfig(({ mode }) => {
   const plugins = [react()];
 
   // Only load express plugin in development mode
-  if (mode === "development") {
-    try {
-      const { expressPlugin } = await import("./vite.dev-plugin");
-      plugins.push(expressPlugin());
-    } catch (error) {
-      console.warn("[Vite] Failed to load dev plugin:", error);
-    }
+  // Use a synchronous check to prevent Vite from analyzing dev files during build
+  if (mode === "development" && process.env.NODE_ENV !== "production") {
+    // Lazy load the dev plugin to prevent bundling server code
+    const devConfig = {
+      apply: "serve",
+      async configureServer(server: any) {
+        try {
+          console.log("[EXPRESS] Initializing Express server...");
+          const { createServer } = await import("./server");
+          const app = await createServer();
+          console.log("[EXPRESS] Express server initialized, adding middleware");
+          server.middlewares.use(app);
+          console.log("[EXPRESS] Express middleware added");
+        } catch (err) {
+          console.error("[EXPRESS] Error initializing Express:", err);
+        }
+      },
+    };
+    plugins.push(devConfig);
   }
 
   return {
