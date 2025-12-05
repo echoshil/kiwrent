@@ -8,8 +8,12 @@ export default defineConfig(async ({ mode }) => {
 
   // Only load express plugin in development mode
   if (mode === "development") {
-    const { expressPlugin } = await import("./vite.dev-plugin");
-    plugins.push(expressPlugin());
+    try {
+      const { expressPlugin } = await import("./vite.dev-plugin");
+      plugins.push(expressPlugin());
+    } catch (error) {
+      console.warn("[Vite] Failed to load dev plugin:", error);
+    }
   }
 
   return {
@@ -24,6 +28,8 @@ export default defineConfig(async ({ mode }) => {
     },
     build: {
       outDir: "dist/spa",
+      sourcemap: false,
+      minify: "terser",
     },
     plugins,
     resolve: {
@@ -31,6 +37,9 @@ export default defineConfig(async ({ mode }) => {
         "@": path.resolve(__dirname, "./client"),
         "@shared": path.resolve(__dirname, "./shared"),
       },
+    },
+    ssr: {
+      external: ["@prisma/client"],
     },
   };
 });
